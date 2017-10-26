@@ -1,0 +1,22 @@
+#!/bin/bash
+set -e
+
+build_dir=$1
+cache_dir=$2
+DEPS_DIR=$3
+index=$4
+
+BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
+export BUILDPACK_PATH=$BP_DIR
+
+source $build_dir/cf-creds
+
+CF_HOME=$DEPS_DIR/$index
+
+mkdir $CF_HOME/bin
+
+cp -R $BP_DIR/bin/cf $CF_HOME/bin
+chmod 775 $CF_HOME/bin
+
+$BP_DIR/bin/cf api $CF_API
+$BP_DIR/bin/cf login -a $CF_API --skip-ssl-validation -u $CF_USERNAME -p $CF_PASSWORD -o $CF_ORG
